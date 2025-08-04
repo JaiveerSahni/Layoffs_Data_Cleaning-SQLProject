@@ -1,71 +1,98 @@
 # Layoffs Data Cleaning SQL Project
-This project involves cleaning and preparing the 2022 Layoffs dataset (from [Kaggle, Swaptr/layoffs-2022]) for further analysis and exploration using SQL. The repository contains the data cleaning SQL script and documentation for each step taken to improve data quality and consistency.
 
-# Project Goals
--Ensure data integrity by removing duplicates and correcting inconsistencies.
+This project focuses on cleaning and preparing the [2022 Layoffs dataset from Kaggle (swaptr/layoffs-2022)] for advanced data analysis using SQL. The repository includes a comprehensive SQL script with step-by-step cleaning logic and documentation to enhance dataset quality and reliability.
 
--Standardize entries for reliable downstream analysis.
+---
 
--Handle missing values appropriately.
+## Project Goals
 
--Prepare a clean, analysis-ready version of the raw layoffs dataset.
+- Ensure data integrity by removing duplicates and correcting inconsistencies
+- Standardize entries to enable consistent downstream analysis
+- Handle missing values thoughtfully
+- Produce a clean, analysis-ready version of the raw layoffs dataset
 
-# Project Structure
-Portfolio-Project-Data-Cleaning.sql — Main SQL script with detailed step-by-step cleaning logic.
+---
 
-# Steps Performed
-1. **Create Staging Table**
- -Backs up raw data for reference and rollback.
+## Project Structure
 
- -All cleaning is performed on a staging table to preserve the original dataset.
+- `Portfolio-Project-Data-Cleaning.sql` — Main SQL script containing detailed, step-by-step cleaning queries and comments
 
-2. **Remove Duplicates**
--Identifies duplicates using a ROW_NUMBER() window function over all relevant columns.
+---
 
--Only true duplicates are removed, ensuring legitimate records remain untouched.
+## Steps Performed
 
-3. **Standardize and Fix Data**
--Industry column:
+### 1. Create Staging Table
+- Back up raw data by duplicating the original table
+- Perform all cleaning operations in the staging table to keep the raw table unchanged
 
--Sets blank strings to NULL for easier handling.
+### 2. Remove Duplicates
+- Identify duplicate rows using `ROW_NUMBER()` window functions over all relevant columns
+- Retain only unique records, carefully verifying legitimate repeats to prevent accidental loss
+- Use helper columns as necessary during deduplication
 
--Populates missing industry entries based on other rows for the same company.
+### 3. Standardize and Fix Data
+- **Industry column:**
+  - Convert blanks to `NULL`
+  - Populate missing industry values using entries from identical company names where possible
+  - Standardize name variants, e.g., `'Crypto Currency'` and `'CryptoCurrency'` → `'Crypto'`
+- **Country column:**
+  - Remove trailing periods for consistency (e.g., `'United States.'` → `'United States'`)
+- **Date column:**
+  - Convert string-formatted dates to the SQL `DATE` datatype using `STR_TO_DATE`
 
--Standardizes similar values (e.g., 'Crypto Currency', 'CryptoCurrency' → 'Crypto').
+### 4. Handle Null Values
+- Leave `NULL`s in `total_laid_off`, `percentage_laid_off`, and `funds_raised_millions` where appropriate
+- Remove rows where both `total_laid_off` and `percentage_laid_off` are `NULL` (i.e., useless for quantitative analysis)
 
-Country column:
+### 5. Final Cleanup
+- Drop temporary/helper columns (e.g., `row_num`) created during cleaning
+- Final, cleaned dataset is available in the `world_layoffs.layoffs_staging2` table
 
--Removes trailing periods to ensure consistent country names.
+---
 
-Date column:
+## Usage Instructions
 
--Converts string dates to proper SQL DATE datatype.
+1. Import the raw dataset (see Kaggle link above) into your SQL environment as the `world_layoffs.layoffs` table
+2. Run each section of the `Portfolio-Project-Data-Cleaning.sql` script in sequence
+3. The final cleansed dataset will be found in the `world_layoffs.layoffs_staging2` table
 
-4. **Handle Null Values**
--Leaves NULLs in total_laid_off, percentage_laid_off, and funds_raised_millions to facilitate accurate analysis.
+---
 
--Removes rows where both total_laid_off and percentage_laid_off are NULL (as they carry no useful quantitative data).
+## Key SQL Features Used
 
-5. **Final Cleanup**
--Drops helper columns (like row numbers) no longer necessary after deduplication and cleaning.
+- Window Functions (`ROW_NUMBER()`)
+- Common Table Expressions (CTEs)
+- Conditional `UPDATE` and `DELETE`
+- String manipulation (`TRIM`, `STR_TO_DATE`)
+- Data type conversion
 
-# Usage Instructions
--Import the raw dataset [from Kaggle] into your SQL environment under the world_layoffs.layoffs table.
+---
 
--Run each step from Portfolio-Project-Data-Cleaning.sql in order.
+## EXAMPLE QUERY
+SELECT * FROM world_layoffs.layoffs_staging2 LIMIT 10;
 
--The final cleaned dataset is available in the world_layoffs.layoffs_staging2 table.
+---
 
-# Key SQL Features Used
-Window Functions (ROW_NUMBER())
+## Prerequisites
 
-CTEs (Common Table Expressions)
+- MySQL or compatible database supporting window functions and CTEs
+- Sufficient permissions to create, alter, and drop tables
 
-Conditional UPDATEs and DELETEs
+---
 
-String manipulation (TRIM, STR_TO_DATE)
+## Acknowledgements
 
-Data type conversion
+- [Kaggle - swaptr/layoffs-2022]
+
+---
+
+## Contact
+
+For questions or contributions, please contact:  
+**Jaiveer Singh Sahni** - www.linkedin.com/in/jaiveer-singh-sahni-112823261
+
+---
+
 
 
 
